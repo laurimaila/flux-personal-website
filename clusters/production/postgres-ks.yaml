@@ -1,0 +1,24 @@
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: postgres-kustomization
+  namespace: flux-system
+spec:
+  interval: 1m0s
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+  path: ./deploy/postgres
+  prune: true
+  postBuild:
+    substitute:
+      POSTGRES_VERSION: "15"
+      POSTGRES_STORAGE_SIZE: "10Gi"
+      POSTGRES_MEMORY_REQUEST: "256Mi"
+      POSTGRES_CPU_REQUEST: "250m"
+      POSTGRES_MEMORY_LIMIT: "512Mi"
+      POSTGRES_CPU_LIMIT: "500m"
+    substituteFrom:
+      - kind: Secret
+        name: postgres-secrets
+        optional: false
