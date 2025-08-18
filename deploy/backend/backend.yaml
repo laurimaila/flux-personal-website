@@ -29,6 +29,8 @@ spec:
               value: "Production"
             - name: CONNECTION_STRING
               value: "Host=${POSTGRES_HOST};Database=${POSTGRES_DB};Username=${POSTGRES_USER};Password=${POSTGRES_PASSWORD}"
+            - name: JWT_SECRET_KEY
+              value: "${JWT_SECRET_KEY}"
           resources:
             requests:
               memory: "128Mi"
