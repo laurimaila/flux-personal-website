@@ -6,8 +6,6 @@ metadata:
 spec:
   imageRepositoryRef:
     name: frontend-src
-  filterTags:
-      pattern: "^prod-.*$"
   policy:
     semver:
       range: '>=1.0.0'
