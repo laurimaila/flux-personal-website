@@ -31,13 +31,19 @@ spec:
               value: "Host=${POSTGRES_HOST};Database=${POSTGRES_DB};Username=${POSTGRES_USER};Password=${POSTGRES_PASSWORD}"
             - name: JWT_SECRET_KEY
               value: "${JWT_SECRET_KEY}"
+            - name: DOTNET_GCServer
+              value: "1"
+            - name: DOTNET_GCConcurrent
+              value: "1"
+            - name: ASPNETCORE_FORWARDEDHEADERS_ENABLED
+              value: "true"
           resources:
             requests:
-              memory: "128Mi"
-              cpu: "100m"
-            limits:
               memory: "256Mi"
               cpu: "200m"
+            limits:
+              memory: "512Mi"
+              cpu: "500m"
 ---
 apiVersion: v1
 kind: Service
@@ -48,6 +54,7 @@ metadata:
     service: backend
 spec:
   type: ClusterIP
+  sessionAffinity: ClientIP
   ports:
     - name: http
       port: 80
@@ -62,14 +69,15 @@ metadata:
   name: backend-ingress
   namespace: personal-website
   annotations:
-    nginx.ingress.kubernetes.io/rewrite-target: /
     cert-manager.io/cluster-issuer: letsencrypt-prod
     nginx.ingress.kubernetes.io/enable-cors: "true"
     nginx.ingress.kubernetes.io/cors-allow-origin: "https://${FRONTEND_DOMAIN}"
     nginx.ingress.kubernetes.io/cors-allow-methods: "GET, POST, PUT, DELETE, OPTIONS"
     nginx.ingress.kubernetes.io/cors-allow-headers: "DNT,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range,Authorization"
     nginx.ingress.kubernetes.io/cors-allow-credentials: "true"
-    nginx.ingress.kubernetes.io/cors-max-age: "1728000"
+    nginx.ingress.kubernetes.io/cors-max-age: "86400"
+
+    nginx.ingress.kubernetes.io/rate-limit-requests-per-second: "100"
 spec:
   ingressClassName: nginx
   tls:
